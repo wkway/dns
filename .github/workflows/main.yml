@@ -41,7 +41,7 @@ jobs:
       run: |
         cd blocked-names
         python generate-domains-blocklist.py -o blocked-names.txt 
-	mv blocked-names.txt ./
+        mv blocked-names.txt ./
 
     - name: Sync Packages
       run: |
