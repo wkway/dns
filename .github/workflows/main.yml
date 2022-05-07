@@ -1,0 +1,52 @@
+name: update
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 17 * * *'
+  watch:
+    types: [started]
+
+jobs:
+  merge:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        ref: master
+        fetch-depth: 0
+        lfs: true
+
+    - name: Set git identity
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "actions"
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+          python-version: 3.9
+          cache: pip
+
+    - name: Install Python dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run generate-domains-blocklist.py
+      run: |
+        cd blocked-names
+        python generate-domains-blocklist.py -o blocked-names.txt 
+	mv blocked-names.txt ./
+
+    - name: Sync Packages
+      run: |
+        chmod +x ./dnscrypt-proxy-config.sh
+        ./dnscrypt-proxy-config.sh
+        echo "======================="
+        git add . && git commit -m "$(date "+%Y%m%d-%H%M")" && git push && echo "UPDATE SUCCESS!" || echo "There are currently no updates!"
+        echo "======================="
