@@ -1,7 +1,9 @@
 wget -N https://github.com/felixonmars/dnsmasq-china-list/raw/master/bogus-nxdomain.china.conf
-cat bogus-nxdomain.china.conf | grep -v '^#bogus' | grep bogus-nxdomain | sed 's/bogus-nxdomain=//g' >dnscrypt-blacklist-ips.txt
+cat bogus-nxdomain.china.conf | grep -v '^#bogus' | grep bogus-nxdomain | sed 's/bogus-nxdomain=//g' | sed -e 's/$/\r/' >dnscrypt-blacklist-ips.txt
 wget -N https://raw.githubusercontent.com/wkway/dns/master/blacklist-ips/blacklist-ips.txt
-cat blacklist-ips.txt dnscrypt-blacklist-ips.txt | sort | uniq | sed -e 's/$/\r/' >blocked-ips.txt
+cat blacklist-ips.txt dnscrypt-blacklist-ips.txt | sort | uniq >blocked-ips.txt
+sed -e 's/$/\r/' blocked-ips.txt >blocked-ips1.txt
+mv blocked-ips1.txt blocked-ips.txt
 
 wget -N https://raw.githubusercontent.com/wkway/dns/master/cloaking-rules/cloaking-rule.txt
 wget -N https://github.com/googlehosts/hosts/raw/master/hosts-files/dnscrypt-proxy-cloaking.txt
